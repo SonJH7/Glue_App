@@ -11,7 +11,7 @@ export interface GroupItem {
   categoryColor: string;
   categoryTextColor: string;
   likes: number;
-  comments: string;
+  viewCounts: number;
   participants: string;
   time: string;
   image?: string;
@@ -85,9 +85,17 @@ export interface GroupState {
 // 네비게이션 타입 정의
 export type GroupStackParamList = {
   GroupList: undefined;
-  GroupDetail: {groupId: string};
+  GroupDetail: {postId: string | number};
   CreateGroup: undefined;
   GroupSearch: undefined;
+  UserProfile: {userId: number};
+  DmChat: {dmChatRoomId: number};
+  GroupCreate: undefined;
+  GroupCreateStep2: undefined;
+  GroupCreateStep3: undefined;
+  GroupCreateStep4: undefined;
+  EditGroup: {postId: string | number};
+  Guestbook: {userId: number; userNickname: string};
 };
 
 export type GroupListNavigationProp = StackNavigationProp<GroupStackParamList>;
@@ -100,7 +108,7 @@ export interface GroupDetailProps {
   navigation: GroupListNavigationProp;
   route: {
     params: {
-      groupId: string;
+      postId: string | number;
     };
   };
 }

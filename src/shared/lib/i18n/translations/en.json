@@ -15,7 +15,23 @@
     "search": "Search",
     "send": "Send",
     "select": "Select",
-    "permission": "Permission Required"
+    "permission": "Permission Required",
+    "permission_required": "Permission Required",
+    "photo_permission_blocked": "Photo access permission is blocked. Please enable it in settings.",
+    "permission_check_error": "An error occurred while checking permissions",
+    "sending": "Sending...",
+    "confirm": "Confirm",
+    "success": "Success"
+  },
+  "time": {
+    "am": "AM",
+    "pm": "PM",
+    "year": "",
+    "month": "",
+    "day": "",
+    "hour": "",
+    "minute": "",
+    "dateTimeFormat": "{{month}}/{{day}}/{{year}} {{period}} {{hours}}:{{minutes}}"
   },
   "auth": {
     "login": "Log in",
@@ -33,6 +49,8 @@
     "requiredField": "This field is required",
     "invalidEmail": "Invalid email format",
     "invalidPassword": "Password must be at least 6 characters",
+    "kakaoLoginProcessing": "Processing Kakao login...",
+    "newUserRegistration": "Please register your account information",
     "welcome": {
       "title": "GLUE",
       "subtitle": "For stronger language exchange connections",
@@ -68,13 +86,27 @@
       "title": "Please enter your university\nweb mail ID",
       "subtitle": "We will send a verification code to the ID you entered.",
       "label": "Web mail ID",
-      "placeholder": "Enter your web mail ID"
+      "placeholder": "Enter your web mail ID",
+      "invalidEmail": "Invalid email format",
+      "sendingVerification": "Sending verification code...",
+      "verificationSent": "Verification code has been sent",
+      "sendFailed": "Failed to send verification code",
+      "nextButtonNotice": "Verification code will be sent when you click Next",
+      "notice": "Only @pusan.ac.kr emails are allowed.",
+      "error": {
+        "invalidDomain": "Only @pusan.ac.kr emails are allowed."
+      }
     },
     "verification": {
       "title": "Please enter the code\nwe sent you",
       "didNotReceive": "Didn't receive the email?",
       "resend": "Resend",
-      "resendSuccess": "Verification code has been resent"
+      "resendSuccess": "Verification code has been resent",
+      "emailRequired": "Email information is required",
+      "verifying": "Verifying code...",
+      "verificationSuccess": "Verification successful",
+      "verificationFailed": "Verification failed",
+      "resendFailed": "Failed to resend verification code"
     },
     "nickname": {
       "title": "Please enter the nickname\nyou want to use on GLUE",
@@ -118,6 +150,26 @@
       "advanced": "Advanced",
       "proficient": "Proficient"
     },
+    "exchangeLanguage": {
+      "title": "Please select the language\nyou want to exchange",
+      "subtitle": "Please select the language you want to exchange.",
+      "korean": "Korean",
+      "english": "English",
+      "japanese": "Japanese",
+      "chinese": "Chinese",
+      "german": "German",
+      "french": "French",
+      "spanish": "Spanish"
+    },
+    "exchangeLanguageLevel": {
+      "title": "Please set your proficiency level\nfor the selected exchange language",
+      "subtitle": "Exchange language proficiency level can be changed at any time.",
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "proficient": "Proficient"
+    },
     "university": {
       "title": "Please select your\nuniversity",
       "label": "University",
@@ -144,7 +196,10 @@
         "description": "you can continue to interact with the friends you want."
       },
       "startButton": "Start Now"
-    }
+    },
+    "error": "An error occurred during signup",
+    "success": "Signup completed successfully",
+    "processingSignup": "Processing signup..."
   },
   "profile": {
     "mypage": "My Page",
@@ -200,6 +255,7 @@
     "groupChat": "Group Chat",
     "directMessage": "Direct Message",
     "noGroupChats": "You're not participating in any group chats.",
+    "noDirectMessages": "You don't have any direct messages.",
     "browseGroups": "Browse Groups",
     "failedToLoad": "Failed to load chat rooms",
     "chatInfo": {
@@ -250,12 +306,13 @@
     "modal": {
       "showAlert": "Alert Modal",
       "showConfirm": "Confirm Modal",
+      "showCustom": "Custom Modal",
       "alertTitle": "Alert",
-      "alertMessage": "Please confirm this important information.",
+      "alertMessage": "There is an important alert.",
       "confirmTitle": "Confirm",
-      "confirmMessage": "Are you sure you want to perform this action?",
-      "confirmButtonPressed": "Confirm button was pressed.",
-      "cancelButtonPressed": "Cancel button was pressed."
+      "confirmMessage": "Do you want to proceed with this action?",
+      "customTitle": "Custom Modal",
+      "customMessage": "Enter your desired content."
     }
   },
   "group": {
@@ -268,6 +325,68 @@
       "social": "Social",
       "help": "Help"
     },
+    "create": {
+      "title": "Create Group Post",
+      "step": "{{step}} / {{total}}",
+      "selectType": "Please select the type of group\nyou want to create",
+      "social": {
+        "description": "A group for people who want to get to know each other while learning a language. Up to 10 people can join."
+      },
+      "study": {
+        "description": "A group for people who want to learn and practice a language together. Up to 10 people can join."
+      },
+      "help": {
+        "description": "A group for people who need help with language learning or want to provide assistance to others."
+      },
+      "success": {
+        "title": "Success",
+        "message": "Group post created successfully."
+      },
+      "error": {
+        "title": "Error",
+        "message": "Failed to create group post",
+        "required_fields": "Please enter both group title and location."
+      },
+      "step2": {
+        "title": "Select the languages and number\nof group members",
+        "title_help": "Please select the languages to exchange",
+        "language_exchange": "Language Exchange",
+        "my_language": "My language",
+        "and": "and",
+        "will_exchange": "will be exchanged.",
+        "member_count": "Number of Members",
+        "member_count_prefix": "Our group will have",
+        "people": "people",
+        "member_count_suffix": "in total."
+      },
+      "step3": {
+        "title": "Enter the title and content\nfor your group post",
+        "group_name_title": "Group Name Title",
+        "group_name_placeholder": "Enter group name title",
+        "detail_content": "Detailed Content",
+        "detail_content_placeholder": "Enter detailed content",
+        "image_count": "(0/1)",
+        "image_cancel": "User cancelled image selection",
+        "image_error": "Image selection error",
+        "image_selection_error": "An error occurred while selecting an image",
+        "image_added": "Image added successfully"
+      },
+      "step4": {
+        "title": "Please name your group and\nspecify meeting time and place",
+        "group_title": "Group Title",
+        "group_title_placeholder": "Please specify your group name",
+        "meeting_datetime": "Meeting Time",
+        "meeting_date": "Meeting Date",
+        "meeting_date_placeholder": "YYYY-MM-DD",
+        "meeting_time": "Meeting Time",
+        "meeting_time_placeholder": "HH:MM",
+        "meeting_location": "Meeting Place",
+        "meeting_location_placeholder": "Please specify where your group will meet",
+        "complete": "Next",
+        "select_date": "Select Date",
+        "select_time": "Select Time"
+      }
+    },
     "search": {
       "placeholder": "Search title, category, or content",
       "recentSearches": "Recent Searches",
@@ -279,10 +398,38 @@
       "meeting_info": "Meeting Information",
       "capacity": "8/10",
       "language": "Preferred exchange language: English",
+      "language_prefix": "Preferred exchange language:",
       "minForeigners": "Minimum English-speaking students: 2",
       "meetingDate": "April 12, 2025 at 6:00 PM",
       "likesCount": "{{count}} people like this.",
-      "joinGroup": "Send a message"
+      "joinGroup": "Send a message",
+      "language_desc": "The first language is the author's language, the second one is the exchange language.",
+      "capacity_desc": "Click to see who is participating in this group.",
+      "minForeigners_desc": "The exact meeting location address is available after joining the group.",
+      "menu": {
+        "edit": "Edit",
+        "bump": "Bump",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete?",
+        "bumpSuccess": "Post has been bumped.",
+        "deleteSuccess": "Post has been deleted.",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "report": "Report",
+        "reportSubmitted": "Your report has been submitted.",
+        "reportModal": {
+          "title": "Please select a reason for reporting.",
+          "reasons": {
+            "spam": "This is spam or promotional content.",
+            "adult": "This contains adult content.",
+            "illegal": "This contains illegal information.",
+            "hate": "This contains hate speech or discriminatory language."
+          },
+          "submitButton": "Report",
+          "success": "Your report has been successfully submitted.",
+          "error": "Failed to submit the report."
+        }
+      }
     },
     "author": {
       "name": "Kim Glue",

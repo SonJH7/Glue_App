@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   View,
@@ -6,7 +6,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import {GroupDetailProps, GroupDetail as GroupDetailType} from '../model/types';
+import {GroupDetailProps} from '../model/types';
 import {commonStyles, navigationStyles} from './styles/groupStyles';
 import {groupDetailStyles} from './styles/groupDetailStyles';
 import GroupHeader from './components/GroupHeader';
@@ -15,65 +15,191 @@ import GroupInfo from './components/GroupInfo';
 import GroupLikes from './components/GroupLikes';
 import {Button} from '@shared/ui';
 import {Text} from '@shared/ui/typography';
-import {mockGroupApi} from '../model/api';
+import {toastService} from '../../../shared/lib/notifications/toast';
+import {useGroupDetail, useCreateDmChatRoom, useReportPost} from '../api/hooks';
+import {useTranslation} from 'react-i18next';
+import {secureStorage} from '@shared/lib/security';
+import ReportModal from './components/ReportModal';
 
 /**
  * 모임 상세 화면 컴포넌트
  */
-const GroupDetail: React.FC<GroupDetailProps> = ({route}) => {
-  const {groupId} = route.params;
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [groupDetail, setGroupDetail] = useState<GroupDetailType | null>(null);
+const GroupDetail: React.FC<GroupDetailProps> = ({route, navigation}) => {
+  const {t} = useTranslation();
+  const {postId} = route.params;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMyPost, setIsMyPost] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
 
+  // 모임 상세 정보 조회 훅 사용
+  const {
+    data: response,
+    isLoading,
+    isError,
+    error,
+  } = useGroupDetail(Number(postId));
+
+  // DM 채팅방 생성 훅 사용
+  const {mutate: createDmChatRoomMutate} = useCreateDmChatRoom();
+
+  // 신고 훅 사용
+  const {mutate: reportPostMutate} = useReportPost();
+
+  // 작성자 프로필로 이동하는 핸들러
+  const handleAuthorPress = (userId: number) => {
+    console.log('사용자 프로필로 이동:', userId);
+    navigation.navigate('UserProfile', {userId});
+  };
+
+  // 내가 작성한 글인지 확인
   useEffect(() => {
-    const fetchGroupDetail = async () => {
+    const checkIsMyPost = async () => {
       try {
-        setIsLoading(true);
-        const response = await mockGroupApi.getGroupDetail(groupId);
-        // API 응답을 GroupDetailType으로 변환
-        setGroupDetail({
-          id: response.id,
-          title: response.title,
-          description: response.description,
-          content: response.content || '',
-          category: response.category,
-          authorName: response.authorName,
-          authorDate: response.authorDate,
-          authorAvatarUrl: response.authorAvatarUrl,
-          likes: response.likes,
-          capacity: response.capacity,
-          language: response.language,
-          minForeigners: response.minForeigners,
-          meetingDate: response.meetingDate,
-          imageUrl: response.imageUrl,
-        });
-        setError(null);
-      } catch (err) {
-        setError('모임 정보를 불러오는 중 오류가 발생했습니다.');
-        console.error('Error fetching group detail:', err);
-      } finally {
-        setIsLoading(false);
+        if (response?.data?.meeting?.creator) {
+          const userId = await secureStorage.getUserId();
+          const creatorId = response.data.meeting.creator.userId;
+
+          setCurrentUserId(userId);
+          if (userId && creatorId === userId) {
+            console.log('내가 작성한 게시글입니다.');
+            setIsMyPost(true);
+          } else {
+            console.log('내가 작성한 게시글이 아닙니다.');
+            setIsMyPost(false);
+          }
+        }
+      } catch (error) {
+        console.error('사용자 정보 확인 오류:', error);
       }
     };
 
-    fetchGroupDetail();
-  }, [groupId]);
+    if (response?.data) {
+      checkIsMyPost();
+    }
+  }, [response]);
 
-  // 모임 참여 버튼 클릭 핸들러
-  const handleJoinPress = async () => {
-    if (!groupDetail) return;
+  // 카테고리 ID에서 텍스트로 변환
+  const getCategoryTextFromId = (categoryId: number): string => {
+    switch (categoryId) {
+      case 1:
+        return t('group.categories.study');
+      case 2:
+        return t('group.categories.social');
+      case 3:
+        return t('group.categories.help');
+      default:
+        return '';
+    }
+  };
+
+  // 카테고리 ID에서 배경색으로 변환
+  const getCategoryColorFromId = (categoryId: number): string => {
+    switch (categoryId) {
+      case 1: // 공부
+        return '#DEE9FC';
+      case 2: // 친목
+        return '#E1FBE8';
+      case 3: // 도움
+        return '#FFF1BB';
+      default:
+        return '#DEE9FC'; // 기본 배경색
+    }
+  };
+
+  // 카테고리 ID에서 텍스트 색상으로 변환
+  const getCategoryTextColorFromId = (categoryId: number): string => {
+    switch (categoryId) {
+      case 1:
+        return '#263FA9';
+      case 2:
+        return '#306339';
+      case 3:
+        return '#A47C5E';
+      default:
+        return '#263FA9'; // 기본 텍스트 색상
+    }
+  };
+
+  // DM 채팅방 생성 버튼 클릭 핸들러
+  const handleSendDmPress = async () => {
+    if (!response?.data?.meeting || !currentUserId) return;
 
     try {
-      const response = await mockGroupApi.joinGroup(groupDetail.id);
-      if (response.success) {
-        console.log(`모임 ${groupId} 참여 신청 성공`);
-        // TODO: 성공 메시지 표시
-      }
-    } catch (err) {
-      console.error('Error joining group:', err);
-      // TODO: 에러 메시지 표시
+      setIsSubmitting(true);
+
+      // 내 아이디와 작성자 아이디를 userIds 배열에 포함
+      const creatorId = response.data.meeting.creator.userId;
+      const userIds = [currentUserId, creatorId];
+
+      createDmChatRoomMutate(
+        {
+          meetingId: response.data.meeting.meetingId,
+          userIds: userIds,
+        },
+        {
+          onSuccess: response => {
+            console.log('DM 채팅방 생성 성공:', response.data);
+
+            // 채팅방 ID를 이용해 채팅방 화면으로 이동
+            const dmChatRoomId = response.data.detail.dmChatRoomId;
+            navigation.navigate('DmChat', {dmChatRoomId});
+
+            toastService.success(
+              t('common.success'),
+              '채팅방이 생성되었습니다.',
+            );
+          },
+          onError: (err: any) => {
+            console.error('DM 채팅방 생성 실패:', err.message);
+            toastService.error(
+              t('common.error'),
+              err.message || 'DM 채팅방 생성에 실패했습니다.',
+            );
+          },
+          onSettled: () => {
+            setIsSubmitting(false);
+          },
+        },
+      );
+    } catch (err: any) {
+      setIsSubmitting(false);
+      console.error('DM 채팅방 생성 오류:', err);
+      toastService.error(t('common.error'), 'DM 채팅방 생성에 실패했습니다.');
     }
+  };
+
+  // 신고하기 모달 열기 핸들러
+  const handleReportPress = () => {
+    setReportModalVisible(true);
+  };
+
+  // 신고하기 핸들러
+  const handleReport = (reason: string) => {
+    if (!postId) return;
+
+    reportPostMutate(
+      {
+        postId: Number(postId),
+        reason: reason,
+      },
+      {
+        onSuccess: () => {
+          console.log('게시글 신고 성공');
+          toastService.success(
+            t('common.success'),
+            t('group.detail.menu.reportModal.success'),
+          );
+        },
+        onError: (error: any) => {
+          console.error('게시글 신고 실패:', error.message);
+          toastService.error(
+            t('common.error'),
+            error.message || t('group.detail.menu.reportModal.error'),
+          );
+        },
+      },
+    );
   };
 
   // 로딩 중 표시
@@ -89,7 +215,7 @@ const GroupDetail: React.FC<GroupDetailProps> = ({route}) => {
   }
 
   // 에러 표시
-  if (error || !groupDetail) {
+  if (isError || !response?.data) {
     return (
       <SafeAreaView style={commonStyles.container}>
         <GroupHeader />
@@ -101,38 +227,66 @@ const GroupDetail: React.FC<GroupDetailProps> = ({route}) => {
             padding: 20,
           }}>
           <Text variant="body1" color="#e74c3c" align="center">
-            {error || '모임 정보를 불러올 수 없습니다.'}
+            {error?.message || t('group.detail.loadError')}
           </Text>
         </View>
       </SafeAreaView>
     );
   }
 
+  // 데이터에서 필요한 정보 추출
+  const {meeting, post} = response.data;
+  const creator = meeting.creator;
+  const mainImageUrl =
+    post.postImageUrl.length > 0 ? post.postImageUrl[0].imageUrl : null;
+
+  // 카테고리 ID가 있으면 번역된 텍스트로 변환
+  const categoryText = meeting.categoryId
+    ? getCategoryTextFromId(meeting.categoryId)
+    : '';
+
+  // 카테고리 ID가 있으면 배경색과 텍스트 색상 계산
+  const categoryBgColor = meeting.categoryId
+    ? getCategoryColorFromId(meeting.categoryId)
+    : '#DEE9FC';
+
+  const categoryTextColor = meeting.categoryId
+    ? getCategoryTextColorFromId(meeting.categoryId)
+    : '#263FA9';
+
   return (
     <SafeAreaView style={commonStyles.container}>
-      <GroupHeader />
-      <ScrollView style={commonStyles.container}>
+      <GroupHeader
+        creatorId={creator.userId}
+        postId={post.postId}
+        onReportPress={handleReportPress}
+      />
+      <ScrollView style={[commonStyles.container, {paddingHorizontal: 19}]}>
         {/* 작성자 정보 */}
         <GroupAuthorInfo
-          category={groupDetail.category}
-          authorName={groupDetail.authorName}
-          date={groupDetail.authorDate}
-          likeCount={groupDetail.likes}
-          avatarUrl={groupDetail.authorAvatarUrl}
+          category={categoryText}
+          authorName={creator.userNickname}
+          date={meeting.createdAt}
+          viewCounts={post.viewCount}
+          avatarUrl={creator.profileImageUrl || null}
+          userId={creator.userId}
+          onAuthorPress={handleAuthorPress}
+          categoryBgColor={categoryBgColor}
+          categoryTextColor={categoryTextColor}
         />
 
         {/* 제목 및 내용 */}
         <Text variant="h4" weight="bold" style={groupDetailStyles.title}>
-          {groupDetail.title}
+          {post.title}
         </Text>
         <Text variant="body1" style={groupDetailStyles.content}>
-          {groupDetail.content}
+          {post.content}
         </Text>
 
         {/* 이미지 */}
-        {groupDetail.imageUrl && (
+        {mainImageUrl && (
           <Image
-            source={{uri: groupDetail.imageUrl}}
+            source={{uri: mainImageUrl}}
             resizeMode={'stretch'}
             style={groupDetailStyles.contentImage}
           />
@@ -140,23 +294,34 @@ const GroupDetail: React.FC<GroupDetailProps> = ({route}) => {
 
         {/* 모임 정보 */}
         <GroupInfo
-          capacity={groupDetail.capacity}
-          language={groupDetail.language}
-          minForeigners={groupDetail.minForeigners}
-          meetingDate={groupDetail.meetingDate}
+          capacity={meeting.maxParticipants}
+          currentParticipants={meeting.currentParticipants}
+          language={meeting.languageId}
+          minForeigners={0} // TODO: 백엔드 API에 추가 필요
+          meetingDate={meeting.meetingTime}
+          participants={meeting.participants}
+          onParticipantPress={handleAuthorPress}
         />
 
         {/* 좋아요 정보 */}
-        <GroupLikes likeCount={groupDetail.likes} />
+        <GroupLikes likeCount={post.likeCount} postId={post.postId} />
 
-        {/* 하단 버튼 */}
-        <Button
-          label="모임 참여하기"
-          onPress={handleJoinPress}
-          style={navigationStyles.joinButton}
-          textStyle={navigationStyles.joinButtonText}
-        />
+        {/* 하단 버튼 영역 */}
+        {!isMyPost && (
+          <Button
+            label={t('group.detail.joinGroup')}
+            onPress={handleSendDmPress}
+            style={navigationStyles.joinButton}
+            textStyle={navigationStyles.joinButtonText}
+            disabled={isSubmitting}
+          />
+        )}
       </ScrollView>
+      <ReportModal
+        visible={reportModalVisible}
+        onClose={() => setReportModalVisible(false)}
+        onReport={handleReport}
+      />
     </SafeAreaView>
   );
 };

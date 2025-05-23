@@ -7,7 +7,16 @@ import {useTranslation} from 'react-i18next';
 import {HomeScreen} from '@features/Home';
 
 // 모임글 화면 컴포넌트 임포트
-import {GroupList, GroupDetail, GroupSearch} from '@features/Group';
+import {
+  GroupList,
+  GroupDetail,
+  GroupSearch,
+  GroupCreate,
+  GroupCreateStep2,
+  GroupCreateStep3,
+  GroupCreateStep4,
+} from '@features/Group';
+import {GroupStackParamList} from '@features/Group/model/types';
 
 // 채팅 화면 컴포넌트 임포트
 import {ChatListScreen, ChatRoomScreen} from '@features/Chat';
@@ -20,6 +29,8 @@ import {
   MyProfileDetailScreen,
   GroupHistoryScreen,
   LikedGroupsScreen,
+  UserProfileDetail,
+  GuestbookScreen,
 } from '@features/Profile';
 // 인증 화면 임포트
 import {
@@ -29,7 +40,6 @@ import {
 } from '@features/auth';
 
 // 헤더 컴포넌트 임포트
-import {Header} from '@widgets/header';
 import CustomHeader from '@widgets/header/ui/CustomHeader';
 
 // 알림 패널 임포트
@@ -48,7 +58,7 @@ const RootStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const BoardStack = createNativeStackNavigator();
-const GroupStack = createNativeStackNavigator();
+const GroupStack = createNativeStackNavigator<GroupStackParamList>();
 const MessagesStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const MainTab = createBottomTabNavigator();
@@ -144,28 +154,18 @@ const AuthNavigator = () => (
 
 // 모임글 스택 네비게이터
 const GroupNavigator = () => {
-  const {t} = useTranslation();
-
   return (
-    <GroupStack.Navigator screenOptions={commonHeaderOptions}>
+    <GroupStack.Navigator
+      screenOptions={{
+        ...commonHeaderOptions,
+        headerShown: false,
+      }}>
       <GroupStack.Screen
         name="GroupList"
         component={GroupList}
         options={{headerShown: false}}
       />
-      <GroupStack.Screen
-        name="GroupDetail"
-        component={GroupDetail}
-        options={{headerShown: false}}
-      />
-      <GroupStack.Screen
-        name="CreateGroup"
-        component={GroupList} // 임시로 동일한 컴포넌트 사용, 추후 변경 필요
-        options={{
-          title: t('group.create'),
-          headerBackTitle: t('common.cancel'),
-        }}
-      />
+
       <GroupStack.Screen
         name="GroupSearch"
         component={GroupSearch}
@@ -190,7 +190,6 @@ const renderProfileIcon = ({color}: {color: string}) => (
 );
 
 // 커스텀 헤더 랜더러
-const renderHeader = (props: any) => <Header {...props} theme={navTheme} />;
 const ProfileNavigator = () => (
   <ProfileStack.Navigator
     initialRouteName="MyPage" // ← 여기 추가!
@@ -228,6 +227,11 @@ const ProfileNavigator = () => (
       component={ProfileEditScreen}
       options={{title: '프로필 수정', headerBackTitle: '취소'}}
     />
+    <ProfileStack.Screen
+      name="Guestbook"
+      component={GuestbookScreen}
+      options={{headerShown: false}}
+    />
   </ProfileStack.Navigator>
 );
 // 메인 탭 네비게이터
@@ -240,7 +244,8 @@ const MainTabNavigator = () => {
     <MainTab.Navigator
       screenOptions={{
         // 커스텀 헤더를 사용하여 모든 탭에 동일한 헤더 적용
-        header: renderHeader,
+        // header: renderHeader,
+        headerShown: false,
         tabBarActiveTintColor: navTheme.colors.primary,
         tabBarInactiveTintColor: '#9DA2AF',
         tabBarStyle: {
@@ -267,6 +272,7 @@ const MainTabNavigator = () => {
           tabBarIcon: renderGroupIcon,
         }}
       />
+
       <MainTab.Screen
         name="Messages"
         component={MessagesNavigator}
@@ -306,6 +312,49 @@ export const AppNavigator = () => {
     <RootStack.Navigator screenOptions={{headerShown: false}}>
       <RootStack.Screen name="Auth" component={AuthNavigator} />
       <RootStack.Screen name="Main" component={MainNavigator} />
+      <GroupStack.Screen
+        name="GroupCreate"
+        component={GroupCreate}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <GroupStack.Screen
+        name="GroupCreateStep2"
+        component={GroupCreateStep2}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <GroupStack.Screen
+        name="GroupCreateStep3"
+        component={GroupCreateStep3}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <GroupStack.Screen
+        name="GroupCreateStep4"
+        component={GroupCreateStep4}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <GroupStack.Screen
+        name="GroupDetail"
+        component={GroupDetail}
+        options={{headerShown: false}}
+      />
+      <GroupStack.Screen
+        name="UserProfile"
+        component={UserProfileDetail}
+        options={{headerShown: false}}
+      />
+      <GroupStack.Screen
+        name="Guestbook"
+        component={GuestbookScreen}
+        options={{headerShown: false}}
+      />
     </RootStack.Navigator>
   );
 };
