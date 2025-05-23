@@ -16,7 +16,10 @@ interface LanguageCardProps {
 
 export const LanguageCard: React.FC<LanguageCardProps> = ({ title, language, level, onEdit }) => {
   const { t } = useTranslation();
-    const { theme } = useTheme();
+  const { theme } = useTheme();
+
+  const displayLanguage = language || t('profile.not_set');
+  const displayLevel = level || t('profile.not_set');
 
   return(
   <View style={[styles.card, { backgroundColor: "#FFFFFF" }]}>
@@ -33,11 +36,11 @@ export const LanguageCard: React.FC<LanguageCardProps> = ({ title, language, lev
     </View>
     <View style={styles.body}>
       <Text style={styles.label}>{t('settings.language')}</Text>
-      <Text style={styles.value}>{language}</Text>
+      <Text style={styles.value}>{displayLanguage}</Text>
     </View>
     <View style={styles.body}>
       <Text style={styles.label}>{t('profile.level')}</Text>
-      <Text style={styles.value}>{level}</Text>
+      <Text style={styles.value}>{displayLevel}</Text>
     </View>
   </View>
   );

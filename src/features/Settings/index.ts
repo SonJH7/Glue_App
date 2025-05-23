@@ -1,3 +1,3 @@
 import SettingsScreen from './ui';
 
-export {SettingsScreen};
+export { SettingsScreen } from './ui';

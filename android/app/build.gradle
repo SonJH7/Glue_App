@@ -86,7 +86,10 @@ android {
         versionName "1.0"
         
         // 카카오 네이티브 앱 키 설정 (Manifest에서 ${KAKAO_NATIVE_APP_KEY} 값으로 사용)
-        manifestPlaceholders = [KAKAO_NATIVE_APP_KEY: "@string/kakao_app_key"]
+        // manifestPlaceholders = [KAKAO_NATIVE_APP_KEY: "@string/kakao_app_key"]
+        manifestPlaceholders = [ 
+     KAKAO_NATIVE_APP_KEY_SCHEME: "@string/kakao_app_key" 
+    ]
     }
     signingConfigs {
         debug {

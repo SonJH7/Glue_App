@@ -294,17 +294,29 @@ const MainTabNavigator = () => {
 };
 
 // 메인 네비게이터 (인증 후 진입)
-const MainNavigator = () => (
-  <MainStack.Navigator
-    screenOptions={{headerShown: false}}
-    initialRouteName="MainTabs">
-    <MainStack.Screen name="MainTabs" component={MainTabNavigator} />
-    <MainStack.Screen
-      name="NotificationsScreen"
-      component={NotificationsScreen}
-    />
-  </MainStack.Navigator>
-);
+const MainNavigator = () => {
+  const { t } = useTranslation();
+  
+  return (
+    <MainStack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="MainTabs">
+      <MainStack.Screen name="MainTabs" component={MainTabNavigator} />
+      <MainStack.Screen
+        name="NotificationsScreen"
+        component={NotificationsScreen}
+      />
+      <MainStack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          header: () => <CustomHeader title={t('settings.title')} />,
+        }}
+      />
+    </MainStack.Navigator>
+  );
+};
 
 // 앱 메인 네비게이터
 export const AppNavigator = () => {
