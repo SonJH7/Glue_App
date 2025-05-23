@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   container: {
-    height: 27,
+    height: 56,
+    paddingTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E0E0E0',
   },
   placeholder: {
-    width: 24, // 좌측 타이틀 대신 빈 공간
+    width: 60, // 좌측 타이틀 대신 빈 공간
   },
   actions: {
     flexDirection: 'row',

@@ -3,6 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Text } from '@shared/ui/typography/Text';
 import {useTranslation} from 'react-i18next';
+import { useTheme } from '@app/providers/theme';
 
 import { styles } from '../styles/LanguageCard.styles';
 
@@ -15,12 +16,19 @@ interface LanguageCardProps {
 
 export const LanguageCard: React.FC<LanguageCardProps> = ({ title, language, level, onEdit }) => {
   const { t } = useTranslation();
+    const { theme } = useTheme();
+
   return(
-  <View style={styles.card}>
+  <View style={[styles.card, { backgroundColor: "#FFFFFF" }]}>
     <View style={styles.header}>
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity onPress={onEdit}>
-        <Text style={styles.edit}>{t('profile.edit')}</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={onEdit}
+      >
+        <Text style={styles.editText}>
+          {t('profile.edit')}
+        </Text>
       </TouchableOpacity>
     </View>
     <View style={styles.body}>

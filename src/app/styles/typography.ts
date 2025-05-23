@@ -66,5 +66,6 @@ export const typography = {
   body1: createTextStyle('md', 'regular'),
   body2: createTextStyle('sm', 'regular'),
   button: createTextStyle('md', 'semiBold'),
+  editbutton: createTextStyle('xs', 'semibold'),
   caption: createTextStyle('xs', 'regular'),
 };

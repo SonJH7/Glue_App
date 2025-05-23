@@ -39,7 +39,7 @@ export const MyPageScreen = () => {
           <Image
             source={dummyProfile.avatar}
             style={styles.avatar}
-            resizeMode="cover"
+            resizeMode="contain"
           />
           <View style={styles.infoContainer}>
             <Text style={styles.nickname}>{dummyProfile.nickname}</Text>
@@ -82,6 +82,10 @@ export const MyPageScreen = () => {
             onEdit={() => navigation.navigate('ProfileEdit')}
           />
         </View>
+
+        {/* 구분선 */}
+        <View style={styles.divider} />
+         
         {/* 내 정보 리스트 */}
         <Text style={styles.sectionTitle}>{t('profile.myInfo')}</Text>
         <View style={styles.infoList}>
@@ -90,7 +94,7 @@ export const MyPageScreen = () => {
           <MyInfoItem label={t('profile.myGuestbook')} onPress={() => navigation.navigate('Guestbook')} />
           <MyInfoItem label={t('profile.privacySettings')} onPress={() => navigation.navigate('PrivacySettings')} />
         </View>
-      </ScrollView>
+      </ScrollView> 
     </SafeAreaView>
   );
 };

@@ -4,12 +4,12 @@ import { semanticColors, typography, spacing } from '@app/styles';
 
 export const styles = StyleSheet.create({
   item: {
-    height: 48,
+    height: 37,
     justifyContent: 'left',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0,
     borderBottomColor: '#FFFFFF',
-    paddingHorizontal: spacing.md,
-    //backgroundColor: semanticColors.surface,
+    //paddingHorizontal: spacing.ms,
+    marginVertical: 1,
   },
   label: { ...typography.body1, color: semanticColors.text },
 });

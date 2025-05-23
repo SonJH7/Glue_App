@@ -20,6 +20,7 @@ export const colors = {
   lightSilver: '#D2D5DB',
   antiFlashWhite: '#F3F4F6',
   ghostWhite: '#F9FAFB',
+  white: '#FFFFFF',
 };
 
 // 의미적 색상 (앱 전체에서 일관되게 사용)
@@ -27,11 +28,13 @@ export const semanticColors = {
   primary: colors.maximumBlueGreen,
   secondary: colors.eucalyptus,
   background: colors.ghostWhite,
+  mainbackground: colors.white,
   surface: colors.antiFlashWhite,
   text: colors.richBlack,
   textSecondary: colors.charcoal,
   border: colors.lightSilver,
   error: '#FF3B30',
   success: colors.screaminGreen,
+  comparing: colors.manatee,
   warning: '#FFCC00',
 };
