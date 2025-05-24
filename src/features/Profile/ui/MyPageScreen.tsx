@@ -73,7 +73,7 @@ export const MyPageScreen = () => {
             title={t('profile.myLanguage')}
             language={profile?.language}
             level={profile?.languageLevel}
-            onEdit={() => navigation.navigate('ProfileEdit')}
+            onEdit={() => navigation.navigate('MyLanguageEdit')}
           />
           <LanguageCard
             title={t('profile.exchangeLanguage')}

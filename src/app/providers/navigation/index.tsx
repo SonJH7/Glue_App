@@ -31,6 +31,7 @@ import {
   LikedGroupsScreen,
   UserProfileDetail,
   GuestbookScreen,
+  MyLanguageEditScreen,
 } from '@features/Profile';
 // 인증 화면 임포트
 import {
@@ -231,6 +232,11 @@ const ProfileNavigator = () => (
       name="Guestbook"
       component={GuestbookScreen}
       options={{headerShown: false}}
+    />
+    <ProfileStack.Screen
+      name="MyLanguageEdit"
+      component={MyLanguageEditScreen}
+      options={{ title: '나의 언어 수정', headerBackTitle: '뒤로' }}
     />
   </ProfileStack.Navigator>
 );

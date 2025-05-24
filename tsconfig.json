@@ -3,6 +3,9 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "baseUrl": ".",
+    "jsx": "react-native",
+    "lib": ["ES2015", "DOM"],
+    "moduleResolution": "node",
     "paths": {
       "@app/*": ["src/app/*"],
       "@features/*": ["src/features/*"],
