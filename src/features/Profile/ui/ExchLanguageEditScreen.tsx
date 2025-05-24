@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '../model/useProfile';
 import { LANGUAGE_LIST, LEVEL_LIST } from '@shared/constants/language';
 import { languageEditStyles } from '@shared/styles/languageEdit.styles';
 import { LanguageLevelEditScreen } from './components/LanguageLevelEditScreen';
 
-const MyLanguageEditScreen = ({ navigation }) => {
+const ExchLanguageEditScreen = () => {
   const { t, i18n } = useTranslation();
+  const navigation = useNavigation();
   const { profile, updateProfile } = useProfile();
-  const [selectedLanguage, setSelectedLanguage] = useState(profile?.language || 'ko');
-  const [selectedLevel, setSelectedLevel] = useState(profile?.languageLevel || 'proficient');
+  const [selectedLanguage, setSelectedLanguage] = useState(profile?.exchangeLanguage || 'en');
+  const [selectedLevel, setSelectedLevel] = useState(profile?.exchangeLanguageLevel || 'beginner');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
       await updateProfile({
-        language: selectedLanguage,
-        languageLevel: selectedLevel,
+        exchangeLanguage: selectedLanguage,
+        exchangeLanguageLevel: selectedLevel,
       });
       navigation.goBack();
     } catch (error) {
@@ -31,8 +33,8 @@ const MyLanguageEditScreen = ({ navigation }) => {
 
   return (
     <LanguageLevelEditScreen
-      headerIcon={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/bnWyQkDlsL/s7gi05p9_expires_30_days.png"}
-      headerTitle={t('profile.myLanguage')}
+      headerIcon={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/bnWyQkDlsL/yggzpo48_expires_30_days.png"}
+      headerTitle={t('profile.exchangeLanguage')}
       languageList={LANGUAGE_LIST}
       levelList={LEVEL_LIST}
       selectedLanguage={selectedLanguage}
@@ -47,4 +49,4 @@ const MyLanguageEditScreen = ({ navigation }) => {
   );
 };
 
-export default MyLanguageEditScreen;
+export default ExchLanguageEditScreen; 

@@ -21,7 +21,8 @@
     "permission_check_error": "권한 확인 중 오류가 발생했습니다",
     "sending": "전송 중...",
     "confirm": "확인",
-    "success": "성공"
+    "success": "성공",
+    "saving": "저장 중..."
   },
   "time": {
     "am": "오전",
@@ -210,6 +211,7 @@
     "myGuestbook": "내 방명록",
     "privacySettings": "공개범위 설정",
     "edit": "수정",
+    "editButton": "수정하기",
     "myLanguage": "나의 언어",
     "exchangeLanguage": "교환 언어",
     "level": "수준",
@@ -219,12 +221,14 @@
     "schoolInfo": "학교 정보",
     "name": "이름",
     "nickname": "닉네임",
-    "birth": "생년월일",
+    "birthday": "생년월일",
     "gender": "성별",
     "systemLanguage": "시스템 언어",
     "school": "학교",
     "major": "학과",
-    "email": "이메일"
+    "email": "이메일",
+    "languageLevel": "언어 수준",
+    "languageUpdateError": "언어 설정 업데이트에 실패했습니다."
   },
   "board": {
     "title": "게시판",

@@ -21,7 +21,8 @@
     "permission_check_error": "An error occurred while checking permissions",
     "sending": "Sending...",
     "confirm": "Confirm",
-    "success": "Success"
+    "success": "Success",
+    "saving": "Saving..."
   },
   "time": {
     "am": "AM",
@@ -210,6 +211,7 @@
     "myGuestbook": "My Guestbook",
     "privacySettings": "Privacy Settings",
     "edit": "Edit",
+    "editButton": "Edit",
     "myLanguage": "My Language",
     "exchangeLanguage": "Exch Language",
     "level": "Level",
@@ -219,12 +221,14 @@
     "schoolInfo": "School Info",
     "name": "Name",
     "nickname": "Nickname",
-    "birth": "Birthdate",
+    "birthday": "Birthday",
     "gender": "Gender",
     "systemLanguage": "System Language",
     "school": "School",
     "major": "Major",
-    "email": "Email"
+    "email": "Email",
+    "languageLevel": "Language Level",
+    "languageUpdateError": "Failed to update language settings"
   },
   "board": {
     "title": "Board",
