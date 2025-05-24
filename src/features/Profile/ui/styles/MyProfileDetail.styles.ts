@@ -12,4 +12,6 @@ export const styles = StyleSheet.create({
     borderRadius: spacing.xs, alignItems: 'center',
   },
   editText: { ...typography.button, color: semanticColors.surface },
+  title: { fontSize: 16, fontWeight: 'bold', color: semanticColors.text, textAlign: 'center' },
+  nickname: { fontSize: 20, fontWeight: 'bold', color: semanticColors.text, marginBottom: 8, textAlign: 'center' },
 });

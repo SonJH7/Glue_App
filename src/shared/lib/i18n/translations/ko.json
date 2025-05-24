@@ -213,7 +213,18 @@
     "myLanguage": "나의 언어",
     "exchangeLanguage": "교환 언어",
     "level": "수준",
-    "title": "마이"
+    "title": "마이",
+    "settingTitle": "프로필 설정",
+    "basicInfo": "기본 정보",
+    "schoolInfo": "학교 정보",
+    "name": "이름",
+    "nickname": "닉네임",
+    "birth": "생년월일",
+    "gender": "성별",
+    "systemLanguage": "시스템 언어",
+    "school": "학교",
+    "major": "학과",
+    "email": "이메일"
   },
   "board": {
     "title": "게시판",

@@ -213,7 +213,18 @@
     "myLanguage": "My Language",
     "exchangeLanguage": "Exch Language",
     "level": "Level",
-    "title": "My"
+    "title": "My",
+    "settingTitle": "Profile Settings",
+    "basicInfo": "Basic Info",
+    "schoolInfo": "School Info",
+    "name": "Name",
+    "nickname": "Nickname",
+    "birth": "Birthdate",
+    "gender": "Gender",
+    "systemLanguage": "System Language",
+    "school": "School",
+    "major": "Major",
+    "email": "Email"
   },
   "board": {
     "title": "Board",
