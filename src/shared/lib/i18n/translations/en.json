@@ -474,5 +474,12 @@
     "forbidden": "Access denied",
     "notFound": "Not found",
     "unknown": "Unknown error occurred"
+  },
+  "privacy": {
+    "department": "Department",
+    "groupHistory": "Group History",
+    "likes": "Likes",
+    "guestbook": "Guestbook",
+    "visibility": "Visibility"
   }
 }
