@@ -4,6 +4,7 @@ import { Text } from "@shared/ui/typography/Text";
 import { useTranslation } from "react-i18next";
 import { colors, semanticColors } from "src/app/styles/colors";
 import { styles } from './styles/ContactUsScreen.styles';
+import { notificationService } from 'src/shared/lib/notifications';
 
 type InquiryType = 'group' | 'feature' | 'account' | 'suggestion' | 'etc';
 
@@ -27,6 +28,9 @@ export default function ContactUsScreen({ userEmail }: ContactUsScreenProps) {
   const [email, setEmail] = useState(userEmail || "");
   const [type, setType] = useState<InquiryType | null>(null);
   const [showTypeList, setShowTypeList] = useState(false);
+
+  // 모든 필수 입력값이 채워졌는지 검사
+  const isFormValid = title.trim() && content.trim() && email.trim() && type;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,8 +112,21 @@ export default function ContactUsScreen({ userEmail }: ContactUsScreenProps) {
         />
 
         {/* 문의 보내기 버튼 */}
-        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("알림", "문의가 전송되었습니다!")}>
-          <Text style={styles.text6}>{t("contact.send")}</Text>
+        <TouchableOpacity
+          style={isFormValid ? styles.buttonEnabled : styles.buttonDisabled}
+          onPress={() => {
+            if (isFormValid) {
+              notificationService.toast.success('', t('contact.successToast'));
+              setTitle("");
+              setContent("");
+              setType(null);
+            }
+          }}
+          disabled={!isFormValid}
+        >
+          <Text style={[styles.text6, { color: isFormValid ? colors.white : colors.white }]}>
+            {t("contact.send")}
+          </Text>
         </TouchableOpacity>
         <View style={styles.box2} />
       </ScrollView>

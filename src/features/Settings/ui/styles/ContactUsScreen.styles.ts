@@ -14,6 +14,22 @@ export const styles = StyleSheet.create({
       marginBottom: 22,
       marginHorizontal: 28,
     },
+    buttonDisabled: {
+      alignItems: "center",
+      backgroundColor: colors.batteryChargedBlue + "4D",
+      borderRadius: 10,
+      paddingVertical: 16,
+      marginBottom: 22,
+      marginHorizontal: 28,
+    },
+    buttonEnabled: {
+      alignItems: "center",
+      backgroundColor: colors.batteryChargedBlue,
+      borderRadius: 10,
+      paddingVertical: 16,
+      marginBottom: 22,
+      marginHorizontal: 28,
+    },
     buttonRow: {
       flexDirection: "row",
       backgroundColor: semanticColors.mainbackground,

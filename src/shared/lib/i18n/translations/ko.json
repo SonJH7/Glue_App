@@ -312,24 +312,25 @@
     "system": "시스템 설정"
   },
   "contact": {
-  "title": "문의하기",
-  "subject": "제목",
-  "subjectPlaceholder": "제목",
-  "type": "문의 유형",
-  "typePlaceholder": "문의 유형을 선택해 주세요",
-  "content": "문의 내용",
-  "contentGuide": "궁금한 문의사항이 있다면 작성해 주세요. :)",
-  "contentPlaceholder": "문의 내용을 입력해 주세요.",
-  "email": "답변 받을 이메일",
-  "send": "문의 보내기"
-},
-"inquiryType": {
-  "group": "모임 관련",
-  "feature": "기능 관련",
-  "account": "회원 및 계정",
-  "suggestion": "제안 및 개선",
-  "etc": "기타"
-},
+    "title": "문의하기",
+    "subject": "제목",
+    "subjectPlaceholder": "제목",
+    "type": "문의 유형",
+    "typePlaceholder": "문의 유형을 선택해 주세요",
+    "content": "문의 내용",
+    "contentGuide": "궁금한 문의사항이 있다면 작성해 주세요. :)",
+    "contentPlaceholder": "문의 내용을 입력해 주세요.",
+    "email": "답변 받을 이메일",
+    "send": "문의 보내기",
+    "successToast": "문의를 성공적으로 보냈어요"
+  },
+  "inquiryType": {
+    "group": "모임 관련",
+    "feature": "기능 관련",
+    "account": "회원 및 계정",
+    "suggestion": "제안 및 개선",
+    "etc": "기타"
+  },
   "notification": {
     "title": "알림 예제",
     "toastSection": "토스트 알림",
