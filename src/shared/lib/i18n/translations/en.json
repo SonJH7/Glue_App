@@ -309,6 +309,25 @@
     "light": "Light Mode",
     "system": "System Default"
   },
+  "contact": {
+  "title": "Contact Us",
+  "subject": "Subject",
+  "subjectPlaceholder": "Subject",
+  "type": "Inquiry Type",
+  "typePlaceholder": "Please select inquiry type",
+  "content": "Content",
+  "contentGuide": "If you have any questions, please write them here. :)",
+  "contentPlaceholder": "Please enter your inquiry.",
+  "email": "Reply Email",
+  "send": "Send Inquiry"
+},
+"inquiryType": {
+  "group": "Group Related",
+  "feature": "Feature Related",
+  "account": "Account Related",
+  "suggestion": "Suggestion & Improvement",
+  "etc": "Etc"
+},
   "notification": {
     "title": "Notification Examples",
     "toastSection": "Toast Notifications",
