@@ -102,12 +102,14 @@ const SignUpScreen = ({navigation, route}: SignUpScreenProps) => {
         // 화면이 완전히 투명해지면 다음 화면으로 내용 변경
         setCurrentView(nextStep);
 
-        // 새 화면 페이드 인
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }).start();
+        // 약간의 지연 후에 페이드 인 애니메이션 시작 (안정성 개선)
+        setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }).start();
+        }, 50);
       });
     },
     [fadeAnim],
@@ -539,7 +541,7 @@ const SignUpScreen = ({navigation, route}: SignUpScreenProps) => {
         // 애플 회원가입 데이터 준비
         const appleSignupData = {
           authorizationCode: route.params.authorizationCode,
-          userName: name,
+          realName: name,
           nickname: nickname,
           gender: genderValue,
           birthDate: birthDate ? birthDate.toISOString().split('T')[0] : '',
@@ -596,6 +598,7 @@ const SignUpScreen = ({navigation, route}: SignUpScreenProps) => {
 
         const kakaoSignupData = {
           oauthId,
+          realName: name,
           nickname,
           gender: genderValue,
           birthDate: birthDate ? birthDate.toISOString().split('T')[0] : '',
@@ -650,7 +653,8 @@ const SignUpScreen = ({navigation, route}: SignUpScreenProps) => {
   // 회원가입 완료 화면일 때는 레이아웃을 사용하지 않음
   if (isSignupComplete) {
     return (
-      <Animated.View style={{opacity: fadeAnim, flex: 1}}>
+      <Animated.View
+        style={{opacity: fadeAnim, flex: 1, backgroundColor: 'white'}}>
         {renderScreen()}
       </Animated.View>
     );
@@ -664,7 +668,8 @@ const SignUpScreen = ({navigation, route}: SignUpScreenProps) => {
       onBack={handleGoBack}
       isNextDisabled={isNextButtonDisabled()}
       isLoading={step === 11 && sendVerificationCode.isPending}>
-      <Animated.View style={{opacity: fadeAnim, flex: 1}}>
+      <Animated.View
+        style={{opacity: fadeAnim, flex: 1, backgroundColor: 'white'}}>
         {renderScreen()}
       </Animated.View>
     </SignUpLayout>
