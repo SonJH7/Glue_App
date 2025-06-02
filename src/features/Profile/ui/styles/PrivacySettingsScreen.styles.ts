@@ -1,19 +1,20 @@
 import { StyleSheet } from 'react-native';
+import { colors, semanticColors } from 'src/app/styles/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
     paddingVertical: 16,
     paddingHorizontal: 17,
     marginBottom: 32,
@@ -23,7 +24,7 @@ export const styles = StyleSheet.create({
     height: 24,
   },
   headerTitle: {
-    color: '#303030',
+    color: semanticColors.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -32,7 +33,7 @@ export const styles = StyleSheet.create({
     height: 24,
   },
   sectionTitle: {
-    color: '#303030',
+    color: semanticColors.text,
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 28,
@@ -46,7 +47,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 19,
   },
   itemLabel: {
-    color: '#303030',
+    color: semanticColors.text,
     fontSize: 16,
   },
   itemIcon: {

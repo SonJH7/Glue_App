@@ -1,9 +1,10 @@
 import {StyleSheet} from 'react-native';
+import { colors, semanticColors } from 'src/app/styles/colors';
 
 export const userProfileDetailStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
   },
 
   header: {
@@ -12,7 +13,7 @@ export const userProfileDetailStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: semanticColors.border,
   },
 
   backButton: {
@@ -21,7 +22,7 @@ export const userProfileDetailStyles = StyleSheet.create({
 
   backButtonText: {
     fontSize: 18,
-    color: '#333333',
+    color: semanticColors.text,
     fontWeight: '600',
   },
 
@@ -44,32 +45,32 @@ export const userProfileDetailStyles = StyleSheet.create({
 
   errorText: {
     fontSize: 16,
-    color: '#e74c3c',
+    color: semanticColors.error,
     textAlign: 'center',
   },
 
   profileSection: {
     alignItems: 'center',
     paddingVertical: 32,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
   },
 
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: colors.antiFlashWhite,
   },
 
   defaultAvatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: colors.ghostWhite,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E9ECEF',
+    borderColor: colors.lightSilver,
   },
 
   avatarText: {
@@ -84,14 +85,14 @@ export const userProfileDetailStyles = StyleSheet.create({
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333333',
+    color: semanticColors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
 
   description: {
     fontSize: 16,
-    color: '#666666',
+    color: semanticColors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
@@ -113,12 +114,12 @@ export const userProfileDetailStyles = StyleSheet.create({
 
   infoText: {
     fontSize: 16,
-    color: '#333333',
+    color: semanticColors.text,
     marginLeft: 12,
   },
 
   languageSection: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: colors.ghostWhite,
     paddingHorizontal: 20,
     paddingVertical: 24,
     marginBottom: 8,
@@ -127,7 +128,7 @@ export const userProfileDetailStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333333',
+    color: semanticColors.text,
     marginBottom: 16,
   },
 
@@ -147,13 +148,13 @@ export const userProfileDetailStyles = StyleSheet.create({
 
   languageLabel: {
     fontSize: 14,
-    color: '#666666',
+    color: semanticColors.textSecondary,
     marginBottom: 4,
   },
 
   languageValue: {
     fontSize: 16,
-    color: '#333333',
+    color: semanticColors.text,
     fontWeight: '500',
   },
 
@@ -168,16 +169,16 @@ export const userProfileDetailStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: semanticColors.border,
   },
 
   menuText: {
     fontSize: 16,
-    color: '#333333',
+    color: semanticColors.text,
   },
 
   menuArrow: {
     fontSize: 16,
-    color: '#999999',
+    color: colors.manatee,
   },
 });

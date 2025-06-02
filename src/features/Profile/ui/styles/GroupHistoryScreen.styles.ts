@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import { colors, semanticColors } from 'src/app/styles/colors';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: semanticColors.mainbackground,
   },
   scrollView: {
     flex: 1,
@@ -41,7 +42,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   view: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: semanticColors.surface,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 15,
@@ -67,17 +68,17 @@ export const styles = StyleSheet.create({
   text2: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#666666',
+    color: semanticColors.textSecondary,
     marginRight: 20,
   },
   text3: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#666666',
+    color: semanticColors.textSecondary,
   },
   text4: {
     fontSize: 14,
-    color: '#666666',
+    color: semanticColors.textSecondary,
   },
   text5: {
     fontSize: 16,
@@ -86,7 +87,7 @@ export const styles = StyleSheet.create({
   },
   box: {
     height: 1,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: semanticColors.border,
     marginTop: 10,
   },
   box2: {
@@ -95,7 +96,7 @@ export const styles = StyleSheet.create({
   box3: {
     width: 80,
     height: 2,
-    backgroundColor: '#007AFF',
+    backgroundColor: semanticColors.primary,
     marginTop: 5,
   },
   box3Right: {
@@ -105,29 +106,29 @@ export const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: semanticColors.border,
     marginRight: 5,
   },
   box5: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#007AFF',
+    backgroundColor: semanticColors.primary,
     marginRight: 5,
   },
   box6: {
     height: 1,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: semanticColors.border,
     marginTop: 15,
     marginHorizontal: 20,
   },
   box7: {
     height: 1,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: semanticColors.border,
     marginHorizontal: 20,
   },
   activeTab: {
-    color: '#007AFF',
+    color: semanticColors.primary,
     fontWeight: '600',
   },
 }); 
