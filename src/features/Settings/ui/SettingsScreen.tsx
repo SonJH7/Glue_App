@@ -1,44 +1,39 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { SafeAreaView, ScrollView, View, Image } from 'react-native';
 import { Text } from '@shared/ui/typography/Text';
 import { useTranslation } from 'react-i18next';
 import { styles } from './styles/SettingsScreen.styles';
 
-export const SettingsScreen = () => {
+export default (props) => {
   const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
-          {/* 언어 설정 컴포넌트 추가 예정 */}
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.row}>
+          <Image
+            source={{ uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/bnWyQkDlsL/ta5xgxiy_expires_30_days.png" }}
+            resizeMode={"stretch"}
+            style={styles.image}
+          />
+          <Text style={styles.text}>{t("settings.title")}</Text>
+          <View style={styles.box} />
         </View>
-        
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.notification')}</Text>
-          {/* 알림 설정 컴포넌트 추가 예정 */}
+        <Text style={styles.text2}>{t("settings.guide")}</Text>
+        <View style={styles.row2}>
+          <Text style={styles.text3}>{t("settings.appVersion")}</Text>
+          <Text style={styles.text4}>1.0.0</Text>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
-          {/* 계정 설정 컴포넌트 추가 예정 */}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.privacy')}</Text>
-          {/* 개인정보 설정 컴포넌트 추가 예정 */}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.help')}</Text>
-          {/* 도움말 컴포넌트 추가 예정 */}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.about')}</Text>
-          {/* 앱 정보 컴포넌트 추가 예정 */}
-        </View>
+        <Text style={styles.text5}>{t("settings.contact")}</Text>
+        <Text style={styles.text5}>{t("settings.notice")}</Text>
+        <Text style={styles.text6}>{t("settings.terms")}</Text>
+        <Text style={styles.text6}>{t("settings.privacy")}</Text>
+        <Text style={styles.text7}>{t("settings.openSource")}</Text>
+        <View style={styles.box2} />
+        <Text style={styles.text2}>{t("settings.etc")}</Text>
+        <Text style={styles.text5}>{t("settings.withdraw")}</Text>
+        <Text style={styles.text8}>{t("settings.logout")}</Text>
+        <View style={styles.box3} />
       </ScrollView>
     </SafeAreaView>
   );
