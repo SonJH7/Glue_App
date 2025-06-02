@@ -20,11 +20,16 @@ import {
   DateDivider,
   ChatRoomInfo,
 } from '../../components';
-import {fetchChatDetails, sendMessage} from '../../model';
 import {
-  ChatDetails,
-  ChatMessage as ChatMessageType,
-} from '../../entities/types';
+  useDmChatRoomDetail,
+  useDmMessages,
+  useSendDmMessage,
+} from '../../api/hooks';
+import {DmMessageResponse, DmChatRoomParticipant} from '../../api/api';
+import {webSocketService} from '../../lib/websocket';
+import {toastService} from '@shared/lib/notifications/toast';
+import {dummyProfile} from '@shared/assets/images';
+import {config} from '@shared/config/env';
 
 interface ChatRoomScreenProps {
   route?: {
@@ -39,43 +44,226 @@ interface ChatRoomScreenProps {
 const {width} = Dimensions.get('window');
 
 const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
-  const [chatDetails, setChatDetails] = useState<ChatDetails | null>(null);
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  console.log('[ChatRoomScreen] 컴포넌트 로드됨');
+  console.log('[ChatRoomScreen] route.params:', route?.params);
+  console.log('[ChatRoomScreen] API_URL:', config.API_URL);
+  console.log(
+    '[ChatRoomScreen] WebSocket URL:',
+    config.API_URL.replace('http://', 'ws://').replace('https://', 'wss://') +
+      '/ws',
+  );
+
+  const [messages, setMessages] = useState<DmMessageResponse[]>([]);
   const [showRoomInfo, setShowRoomInfo] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [wsStatus, setWsStatus] = useState(webSocketService.getStatus());
   const slideAnim = useRef(new Animated.Value(width)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // route.params.roomId가 없으면 기본값이 아니라 에러 처리
-  const roomId = route?.params?.roomId;
+  // route.params에서 dmChatRoomId 가져오기
   const dmChatRoomId = route?.params?.dmChatRoomId;
+  console.log('[ChatRoomScreen] dmChatRoomId:', dmChatRoomId);
+
+  // API 훅들
+  const {
+    data: chatRoomDetail,
+    isLoading: isDetailLoading,
+    isError: isDetailError,
+    error: detailError,
+  } = useDmChatRoomDetail(dmChatRoomId || -1);
+  console.log(chatRoomDetail);
+  const {
+    data: initialMessages,
+    isLoading: isMessagesLoading,
+    isError: isMessagesError,
+    error: messagesError,
+  } = useDmMessages(dmChatRoomId || -1);
+
+  const sendMessageMutation = useSendDmMessage();
+
+  console.log('[ChatRoomScreen] API 상태:', {
+    isDetailLoading,
+    isMessagesLoading,
+    isDetailError,
+    isMessagesError,
+    chatRoomDetail: !!chatRoomDetail,
+    initialMessages: !!initialMessages,
+  });
+
+  // WebSocket 상태 주기적 확인
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const currentStatus = webSocketService.getStatus();
+      if (currentStatus !== wsStatus) {
+        setWsStatus(currentStatus);
+        console.log('[ChatRoomScreen] WebSocket 상태 변경:', currentStatus);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [wsStatus]);
+
+  // 에러 처리
+  useEffect(() => {
+    if (isDetailError && detailError) {
+      console.error('[ChatRoomScreen] 채팅방 상세 정보 에러:', detailError);
+      toastService.error('오류', detailError.message);
+    }
+    if (isMessagesError && messagesError) {
+      console.error('[ChatRoomScreen] 메시지 목록 에러:', messagesError);
+      toastService.error('오류', messagesError.message);
+    }
+  }, [isDetailError, detailError, isMessagesError, messagesError]);
+
+  // 초기 메시지 설정
+  useEffect(() => {
+    if (initialMessages?.data) {
+      console.log(
+        '[ChatRoomScreen] 초기 메시지 설정:',
+        initialMessages.data.length,
+        '개',
+      );
+      setMessages(initialMessages.data);
+    }
+  }, [initialMessages]);
+
+  // WebSocket 연결 및 구독
+  useEffect(() => {
+    if (!dmChatRoomId) return;
+
+    let isComponentMounted = true;
+
+    const initializeWebSocket = async () => {
+      try {
+        console.log('[ChatRoomScreen] WebSocket 초기화 시작...');
+        console.log(
+          '[ChatRoomScreen] 현재 WebSocket 상태:',
+          webSocketService.getStatus(),
+        );
+
+        // WebSocket 연결
+        await webSocketService.connect();
+
+        console.log(
+          '[ChatRoomScreen] WebSocket 연결 후 상태:',
+          webSocketService.getStatus(),
+        );
+
+        // 연결이 완료될 때까지 잠시 대기
+        let maxRetries = 10;
+        let retryCount = 0;
+
+        while (
+          webSocketService.getStatus() !== 'connected' &&
+          retryCount < maxRetries
+        ) {
+          console.log(
+            `[ChatRoomScreen] 연결 대기 중... (${
+              retryCount + 1
+            }/${maxRetries})`,
+          );
+          await new Promise(resolve => setTimeout(resolve, 500));
+          retryCount++;
+        }
+
+        if (webSocketService.getStatus() !== 'connected') {
+          throw new Error('WebSocket 연결 시간 초과');
+        }
+
+        if (!isComponentMounted) return;
+
+        // 현재 사용자 ID 가져오기 (첫 번째 참가자를 현재 사용자로 가정)
+        const currentUserId =
+          chatRoomDetail?.data?.participants?.[0]?.user?.userId;
+        console.log(`[ChatRoomScreen] 현재 사용자 ID: ${currentUserId}`);
+
+        // 채팅방 구독
+        console.log(`[ChatRoomScreen] 채팅방 ${dmChatRoomId} 구독 시작...`);
+        console.log(`[ChatRoomScreen] 현재 사용자 ID: ${currentUserId}`);
+
+        // 현재 사용자 ID를 WebSocket 서비스에 설정
+        if (currentUserId) {
+          webSocketService.subscribeToUserMessages(
+            currentUserId,
+            newMessage => {
+              console.log('[ChatRoomScreen] 새 메시지 수신:', newMessage);
+              if (isComponentMounted) {
+                setMessages(prev => {
+                  console.log(
+                    '[ChatRoomScreen] 메시지 추가 전 개수:',
+                    prev.length,
+                  );
+                  const updated = [...prev, newMessage];
+                  console.log(
+                    '[ChatRoomScreen] 메시지 추가 후 개수:',
+                    updated.length,
+                  );
+                  return updated;
+                });
+                // 새 메시지가 도착하면 스크롤을 맨 아래로
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollToEnd({animated: true});
+                }, 100);
+              }
+            },
+          );
+
+          // 읽음 상태 구독
+          webSocketService.subscribeToReadStatus(dmChatRoomId);
+        }
+      } catch (error) {
+        console.error('[ChatRoomScreen] WebSocket 초기화 실패:', error);
+        if (isComponentMounted) {
+          const errorMessage =
+            error instanceof Error ? error.message : '알 수 없는 오류';
+          toastService.error(
+            '연결 오류',
+            `WebSocket 연결에 실패했습니다: ${errorMessage}`,
+          );
+        }
+      }
+    };
+
+    initializeWebSocket();
+
+    // 클린업
+    return () => {
+      console.log(
+        `[ChatRoomScreen] 컴포넌트 언마운트: 채팅방 ${dmChatRoomId} 구독 해제`,
+      );
+      isComponentMounted = false;
+      if (dmChatRoomId) {
+        webSocketService.unsubscribeFromChatRoom(dmChatRoomId);
+      }
+      // 현재 사용자 메시지 구독 해제
+      const currentUserId =
+        chatRoomDetail?.data?.participants?.[0]?.user?.userId;
+      if (currentUserId) {
+        webSocketService.unsubscribeFromUserMessages(currentUserId);
+      }
+    };
+  }, [dmChatRoomId, chatRoomDetail]);
 
   // 패널을 드래그하여 닫을 수 있는 PanResponder 설정
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => false, // 시작부터 모든 터치를 가로채지 않음
+      onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // 가로 이동이 세로 이동보다 크고 최소 10px 이상일 때만 반응
         return (
           gestureState.dx > 10 &&
           Math.abs(gestureState.dx) > Math.abs(gestureState.dy)
         );
       },
       onPanResponderMove: (_, gestureState) => {
-        // 오른쪽으로 드래그하는 거리만큼 애니메이션 값 조정
         if (gestureState.dx > 0) {
           slideAnim.setValue(width * 0.25 + gestureState.dx);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        // 일정 거리 이상 스와이프하면 메뉴 닫기
         if (gestureState.dx > width * 0.2) {
           closeRoomInfo();
         } else {
-          // 그렇지 않으면 원래 위치로 돌아가기
           Animated.spring(slideAnim, {
             toValue: width * 0.25,
             useNativeDriver: true,
@@ -85,109 +273,71 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
     }),
   ).current;
 
+  // 사이드 패널 애니메이션
   useEffect(() => {
     if (showRoomInfo && !isClosing) {
-      // 메뉴 열기 애니메이션 (패널 슬라이드 + 배경 페이드인)
       Animated.parallel([
-        Animated.spring(slideAnim, {
-          toValue: width * 0.25, // 화면의 25% 위치 (75%만 차지)
-          useNativeDriver: true,
-          friction: 8, // 부드러운 애니메이션을 위한 설정
-          tension: 40,
-        }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 250,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
+          toValue: width * 0.25,
           useNativeDriver: true,
         }),
       ]).start();
     } else if (isClosing) {
-      // 메뉴 닫기 애니메이션
       Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
         Animated.spring(slideAnim, {
           toValue: width,
           useNativeDriver: true,
-          friction: 8,
-          tension: 40,
         }),
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start(({finished}) => {
-        // 애니메이션이 완료된 후에만 메뉴를 숨김
-        if (finished) {
-          setShowRoomInfo(false);
-          setIsClosing(false);
-        }
+      ]).start(() => {
+        setShowRoomInfo(false);
+        setIsClosing(false);
+        slideAnim.setValue(width);
       });
     }
-  }, [showRoomInfo, isClosing, slideAnim, fadeAnim]);
+  }, [showRoomInfo, isClosing, fadeAnim, slideAnim]);
 
-  useEffect(() => {
-    const loadChatDetails = async () => {
-      if (!roomId && !dmChatRoomId) {
-        setError('채팅방 ID가 제공되지 않았습니다.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        let details;
-        if (dmChatRoomId) {
-          // DM 채팅방 정보 로드 (임시로 fetchChatDetails 재사용)
-          // 실제로는 DM 채팅방 전용 API 호출 필요
-          details = await fetchChatDetails(`dm_${dmChatRoomId}`);
-        } else if (roomId) {
-          // 일반 채팅방 정보 로드
-          details = await fetchChatDetails(roomId);
-        }
-
-        if (details) {
-          setChatDetails(details);
-          setMessages(details.messages);
-        } else {
-          setError(`채팅방 정보를 찾을 수 없습니다: ${dmChatRoomId || roomId}`);
-        }
-      } catch (error) {
-        console.error('채팅방 정보를 불러오는데 실패했습니다:', error);
-        setError('채팅방 정보를 불러오는데 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadChatDetails();
-  }, [roomId, dmChatRoomId]);
-
+  // 메시지 전송 핸들러
   const handleSendMessage = async (text: string) => {
-    if (!chatDetails) return;
+    if (!dmChatRoomId) {
+      toastService.error('오류', '채팅방 정보가 없습니다.');
+      return;
+    }
 
     try {
-      let newMessage;
-      if (dmChatRoomId) {
-        // DM 메시지 전송 (임시로 sendMessage 재사용)
-        // 실제로는 DM 메시지 전용 API 호출 필요
-        newMessage = await sendMessage(`dm_${dmChatRoomId}`, text);
-      } else if (roomId) {
-        // 일반 메시지 전송
-        newMessage = await sendMessage(roomId, text);
-      }
+      await sendMessageMutation.mutateAsync({
+        dmChatRoomId,
+        content: text,
+      });
 
-      if (newMessage) {
-        setMessages(prevMessages => [...prevMessages, newMessage!]);
+      // 메시지 전송 후 스크롤을 맨 아래로
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({animated: true});
+      }, 100);
+    } catch (error: any) {
+      console.error('메시지 전송 실패:', error);
 
-        // 스크롤을 맨 아래로 이동
-        setTimeout(() => {
-          scrollViewRef.current?.scrollToEnd({animated: true});
-        }, 100);
+      // FCM 관련 에러인 경우 다른 메시지 표시
+      if (
+        error.message?.includes('firebase') ||
+        error.message?.includes('token')
+      ) {
+        toastService.error(
+          '알림 오류',
+          '메시지는 전송되었지만 푸시 알림에 문제가 있습니다.',
+        );
+      } else {
+        toastService.error('전송 실패', '메시지 전송에 실패했습니다.');
       }
-    } catch (error) {
-      console.error('메시지 전송에 실패했습니다:', error);
     }
   };
 
@@ -210,7 +360,7 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
 
   const handleLeaveRoom = () => {
     closeRoomInfo();
-    // 실제로는 채팅방을 나가는 API 호출 후 처리
+    // TODO: 채팅방 나가기 API 호출
     setTimeout(() => {
       if (navigation) {
         navigation.goBack();
@@ -218,8 +368,30 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
     }, 300);
   };
 
-  // 로딩 중일 때 로딩 인디케이터 표시
-  if (loading) {
+  // 사용자 정보 가져오기 헬퍼 함수
+  const getUserById = (userId: number) => {
+    if (!chatRoomDetail?.data?.participants) return null;
+
+    const participant = chatRoomDetail.data.participants.find(
+      (participant: DmChatRoomParticipant) =>
+        participant.user.userId === userId,
+    );
+
+    if (!participant) return null;
+
+    return {
+      userId: participant.user.userId,
+      userName: participant.user.userNickname, // userNickname을 userName으로 매핑
+      profileImageUrl: participant.user.profileImageUrl,
+      isHost: participant.isHost,
+    };
+  };
+
+  // 현재 사용자 ID 가져오기 (첫 번째 참가자를 현재 사용자로 가정)
+  const currentUserId = chatRoomDetail?.data?.participants?.[0]?.user?.userId;
+
+  // 로딩 중일 때
+  if (isDetailLoading || isMessagesLoading) {
     return (
       <SafeAreaView
         style={[
@@ -234,35 +406,29 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
     );
   }
 
-  // 에러가 있을 때 에러 메시지 표시
-  if (error || !chatDetails) {
+  // 에러 발생 시
+  if (!dmChatRoomId || !chatRoomDetail?.data) {
     return (
       <SafeAreaView
         style={[
           styles.container,
           {justifyContent: 'center', alignItems: 'center'},
         ]}>
-        <RNText style={{fontSize: 16, color: '#ff0000', marginBottom: 20}}>
-          {error || '채팅방 정보를 찾을 수 없습니다.'}
+        <RNText style={{color: 'red', textAlign: 'center', padding: 20}}>
+          {!dmChatRoomId
+            ? '채팅방 ID가 제공되지 않았습니다.'
+            : '채팅방 정보를 불러올 수 없습니다.'}
         </RNText>
-        <TouchableWithoutFeedback onPress={handleBackPress}>
-          <View
-            style={{
-              backgroundColor: '#1CBFDC',
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-              borderRadius: 5,
-            }}>
-            <RNText style={{color: '#fff'}}>뒤로 가기</RNText>
-          </View>
-        </TouchableWithoutFeedback>
       </SafeAreaView>
     );
   }
 
-  const getUserById = (userId: string) => {
-    return chatDetails.users.find(user => user.id === userId);
-  };
+  // 다른 사용자 정보 (현재 사용자가 아닌 첫 번째 참가자)
+  const otherUser = chatRoomDetail.data.participants.find(
+    (participant: DmChatRoomParticipant) =>
+      participant.user.userId !== currentUserId,
+  );
+  const chatRoomName = otherUser?.user?.userNickname || '알 수 없는 사용자';
 
   return (
     <KeyboardAvoidingView
@@ -270,13 +436,38 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
       style={styles.container}>
       <SafeAreaView style={styles.container}>
         <ChatHeader
-          title={chatDetails.name}
-          memberCount={chatDetails.memberCount}
+          title={chatRoomName}
+          memberCount={chatRoomDetail.data.participants.length}
           onBackPress={handleBackPress}
           onMenuPress={handleMenuPress}
         />
 
-        <DateDivider date="2025년 04월 12일" />
+        {/* WebSocket 연결 상태 표시 */}
+        <View
+          style={{
+            backgroundColor:
+              wsStatus === 'connected'
+                ? '#4CAF50'
+                : wsStatus === 'connecting'
+                ? '#FF9800'
+                : '#F44336',
+            paddingVertical: 4,
+            paddingHorizontal: 12,
+            alignItems: 'center',
+          }}>
+          <RNText style={{color: 'white', fontSize: 12}}>
+            WebSocket:{' '}
+            {wsStatus === 'connected'
+              ? '연결됨'
+              : wsStatus === 'connecting'
+              ? '연결 중...'
+              : wsStatus === 'error'
+              ? '연결 오류'
+              : '연결 해제됨'}
+          </RNText>
+        </View>
+
+        <DateDivider date="2025년 01월 12일" />
 
         <ScrollView
           ref={scrollViewRef}
@@ -298,19 +489,44 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
               </RNText>
             </View>
           ) : (
-            messages.map(message => {
-              const user = getUserById(message.senderId);
+            messages.map((message, index) => {
+              // message 및 sender 안전성 검사
+              if (!message || !message.sender) {
+                console.warn('Invalid message or sender:', message);
+                return null;
+              }
+
+              const user = getUserById(message.sender.userId);
               if (!user) return null;
 
+              // dmMessageId가 없는 경우 index를 사용하여 안전하게 처리
+              const messageId =
+                message.dmMessageId?.toString() || `temp-${index}`;
               return (
                 <ChatMessage
-                  key={message.id}
-                  id={message.id}
-                  text={message.text}
-                  timestamp={message.timestamp}
-                  readCount={message.readCount}
-                  isMine={message.senderId === chatDetails.currentUserId}
-                  sender={user}
+                  key={messageId}
+                  id={messageId}
+                  text={message.content || ''}
+                  timestamp={
+                    message.createdAt
+                      ? new Date(message.createdAt).toLocaleTimeString(
+                          'ko-KR',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true,
+                          },
+                        )
+                      : '시간 미상'
+                  }
+                  readCount={message.isRead ? 0 : 1}
+                  isMine={message.sender.userId === currentUserId}
+                  sender={{
+                    id: user?.userId?.toString() || 'unknown',
+                    name: user.userName || '알 수 없는 사용자',
+                    profileImage: user.profileImageUrl || '',
+                    isHost: user.isHost || false,
+                  }}
                 />
               );
             })
@@ -341,17 +557,20 @@ const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({route, navigation}) => {
               },
             ]}>
             <ChatRoomInfo
-              roomName={chatDetails.name}
-              roomIcon={chatDetails.roomIcon}
-              memberCount={chatDetails.memberCount}
-              isDirectMessage={chatDetails.type === 'direct'}
-              members={chatDetails.users.map(user => ({
-                id: user.id,
-                name: user.name,
-                profileImage: user.profileImage,
-                isHost: user.isHost,
-                isOnline: user.isOnline,
-              }))}
+              roomName={chatRoomName}
+              roomIcon={undefined}
+              memberCount={chatRoomDetail.data.participants.length}
+              isDirectMessage={true}
+              members={chatRoomDetail.data.participants.map(
+                (participant: DmChatRoomParticipant) => ({
+                  id: participant.user.userId?.toString() || 'unknown',
+                  name: participant.user.userNickname || '알 수 없는 사용자',
+                  profileImage:
+                    participant.user.profileImageUrl || dummyProfile,
+                  isHost: participant.isHost || false,
+                  isOnline: false, // TODO: 온라인 상태 정보 추가 필요
+                }),
+              )}
               onClose={closeRoomInfo}
               onLeaveRoom={handleLeaveRoom}
             />
