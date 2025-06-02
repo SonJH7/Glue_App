@@ -1,3 +1,6 @@
+group = 'com.sadajo.glue'
+version = '1.0.0'
+
 buildscript {
     ext {
         buildToolsVersion = "35.0.0"

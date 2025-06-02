@@ -32,6 +32,7 @@ import {
   UserProfileDetail,
   GuestbookScreen,
   MyLanguageEditScreen,
+  MyActiveGroupsScreen,
 } from '@features/Profile';
 // 인증 화면 임포트
 import {
@@ -197,7 +198,7 @@ const renderProfileIcon = ({color}: {color: string}) => (
 // 커스텀 헤더 랜더러
 const ProfileNavigator = () => (
   <ProfileStack.Navigator
-    initialRouteName="MyPage" // ← 여기 추가!
+    initialRouteName="MyPage"
     screenOptions={{
       headerShown: true,
       header: () => <CustomHeader title="마이페이지" />,
@@ -221,6 +222,11 @@ const ProfileNavigator = () => (
       name="GroupHistory"
       component={GroupHistoryScreen}
       options={{title: '모임 히스토리', headerBackTitle: '뒤로'}}
+    />
+    <ProfileStack.Screen
+      name="MyActiveGroups"
+      component={MyActiveGroupsScreen}
+      options={{title: '참여 중인 모임', headerBackTitle: '뒤로'}}
     />
     <ProfileStack.Screen
       name="LikedGroups"

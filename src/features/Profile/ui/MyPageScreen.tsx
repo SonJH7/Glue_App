@@ -90,6 +90,7 @@ export const MyPageScreen = () => {
         <Text style={styles.sectionTitle}>{t('profile.myInfo')}</Text>
         <View style={styles.infoList}>
           <MyInfoItem label={t('profile.myGroupsHistory')} onPress={() => navigation.navigate('GroupHistory')} />
+          <MyInfoItem label={t('profile.myActiveGroups')} onPress={() => navigation.navigate('MyActiveGroups')} />
           <MyInfoItem label={t('profile.myLikes')} onPress={() => navigation.navigate('LikedGroups')} />
           <MyInfoItem label={t('profile.myGuestbook')} onPress={() => navigation.navigate('Guestbook')} />
           <MyInfoItem label={t('profile.privacySettings')} onPress={() => navigation.navigate('PrivacySettings')} />

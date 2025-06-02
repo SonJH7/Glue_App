@@ -228,7 +228,9 @@
     "major": "학과",
     "email": "이메일",
     "languageLevel": "언어 수준",
-    "languageUpdateError": "언어 설정 업데이트에 실패했습니다."
+    "languageUpdateError": "언어 설정 업데이트에 실패했습니다.",
+    "hostTab": "주최 모임",
+    "guestTab": "참여 모임"
   },
   "board": {
     "title": "게시판",
