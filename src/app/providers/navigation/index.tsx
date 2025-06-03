@@ -55,6 +55,12 @@ import {
   ProfileIcon,
 } from '@widgets/bottomTab/icons';
 
+// 설정 화면 컴포넌트 임포트
+import {
+  SettingsScreen,
+  ContactUsScreen,
+} from '@features/settings';
+
 // 네비게이션 스택 생성
 const RootStack = createNativeStackNavigator();
 const MainStack = createNativeStackNavigator();
@@ -64,6 +70,9 @@ const GroupStack = createNativeStackNavigator<GroupStackParamList>();
 const MessagesStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const MainTab = createBottomTabNavigator();
+
+// 설정 스택 네비게이터 추가
+const SettingsStack = createNativeStackNavigator();
 
 // 네비게이션 헤더 스타일 정의
 const navTheme = {
@@ -250,6 +259,49 @@ const ProfileNavigator = () => (
     />
   </ProfileStack.Navigator>
 );
+
+// 설정 스택 네비게이터 컴포넌트
+const SettingsNavigator = () => {
+  const { t } = useTranslation();
+  
+  return (
+    <SettingsStack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: navTheme.colors.primary,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+          height: 60,
+        },
+        headerTintColor: '#FFFFFF',
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: 18,
+        },
+        headerShadowVisible: false,
+      }}>
+      <SettingsStack.Screen
+        name="SettingsMain"
+        component={SettingsScreen}
+        options={{
+          title: t('settings.title'),
+          headerBackTitle: t('common.back'),
+        }}
+      />
+      <SettingsStack.Screen
+        name="ContactUs"
+        component={ContactUsScreen}
+        options={{
+          title: t('settings.contactUs'),
+          headerBackTitle: t('common.back'),
+        }}
+      />
+    </SettingsStack.Navigator>
+  );
+};
+
 // 메인 탭 네비게이터
 const MainTabNavigator = () => {
   // SafeArea 하단 여백 가져오기
@@ -324,10 +376,9 @@ const MainNavigator = () => {
       />
       <MainStack.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={SettingsNavigator}
         options={{
-          headerShown: true,
-          header: () => <CustomHeader title={t('settings.title')} />,
+          headerShown: false,
         }}
       />
     </MainStack.Navigator>

@@ -10,6 +10,7 @@ export {LikedGroupsScreen} from './ui/LikedGroupsScreen';
 export {default as UserProfileDetail} from './ui/UserProfileDetail';
 export {default as GuestbookScreen} from './ui/GuestbookScreen';
 export { MyActiveGroupsScreen } from './ui/MyActiveGroupsScreen';
+export { MyLanguageEditScreen } from './ui/MyLanguageEditScreen';
 
 // 모델 훅 & 타입도 한 번에
 export * from './model/useProfile';

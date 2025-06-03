@@ -1,11 +1,21 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, View, Image } from 'react-native';
+import { SafeAreaView, ScrollView, View, Image, TouchableOpacity } from 'react-native';
 import { Text } from '@shared/ui/typography/Text';
 import { useTranslation } from 'react-i18next';
 import { styles } from './styles/SettingsScreen.styles';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export default (props) => {
+type SettingsScreenProps = {
+  navigation: NativeStackNavigationProp<any>;
+};
+
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const { t } = useTranslation();
+
+  const handleContactUs = () => {
+    navigation.navigate('ContactUs');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +34,9 @@ export default (props) => {
           <Text style={styles.text3}>{t("settings.appVersion")}</Text>
           <Text style={styles.text4}>1.0.0</Text>
         </View>
-        <Text style={styles.text5}>{t("settings.contact")}</Text>
+        <TouchableOpacity onPress={handleContactUs}>
+          <Text style={styles.text5}>{t("settings.contact")}</Text>
+        </TouchableOpacity>
         <Text style={styles.text5}>{t("settings.notice")}</Text>
         <Text style={styles.text6}>{t("settings.terms")}</Text>
         <Text style={styles.text6}>{t("settings.privacy")}</Text>
