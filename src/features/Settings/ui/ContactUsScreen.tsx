@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { colors, semanticColors } from "src/app/styles/colors";
 import { styles } from './styles/ContactUsScreen.styles';
 import { notificationService } from 'src/shared/lib/notifications';
+import { useNavigation } from '@react-navigation/native';
 
 type InquiryType = 'group' | 'feature' | 'account' | 'suggestion' | 'etc';
 
@@ -23,6 +24,7 @@ const INQUIRY_TYPES = [
 
 export default function ContactUsScreen({ userEmail }: ContactUsScreenProps) {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [email, setEmail] = useState(userEmail || "");
@@ -31,6 +33,17 @@ export default function ContactUsScreen({ userEmail }: ContactUsScreenProps) {
 
   // 모든 필수 입력값이 채워졌는지 검사
   const isFormValid = title.trim() && content.trim() && email.trim() && type;
+
+  const handleSubmit = () => {
+    if (isFormValid) {
+      notificationService.toast.success('', t('contact.successToast'));
+      
+      // 2초 후 설정 페이지로 이동
+      setTimeout(() => {
+        navigation.goBack();
+      }, 2000);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,14 +127,7 @@ export default function ContactUsScreen({ userEmail }: ContactUsScreenProps) {
         {/* 문의 보내기 버튼 */}
         <TouchableOpacity
           style={isFormValid ? styles.buttonEnabled : styles.buttonDisabled}
-          onPress={() => {
-            if (isFormValid) {
-              notificationService.toast.success('', t('contact.successToast'));
-              setTitle("");
-              setContent("");
-              setType(null);
-            }
-          }}
+          onPress={handleSubmit}
           disabled={!isFormValid}
         >
           <Text style={[styles.text6, { color: isFormValid ? colors.white : colors.white }]}>

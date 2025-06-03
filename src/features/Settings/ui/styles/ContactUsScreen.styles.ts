@@ -130,4 +130,68 @@ export const styles = StyleSheet.create({
       color: semanticColors.text,
       fontSize: 16,
     },
+    formContainer: {
+      padding: 16,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 8,
+    },
+    messageInput: {
+      height: 120,
+    },
+    submitButton: {
+      backgroundColor: colors.primary,
+      borderRadius: 8,
+      padding: 16,
+      alignItems: 'center',
+      marginTop: 16,
+    },
+    submitButtonText: {
+      color: colors.white,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    typeSelector: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.white,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    typeText: {
+      fontSize: 16,
+      color: colors.text,
+    },
+    placeholderText: {
+      color: colors.textSecondary,
+    },
+    arrowIcon: {
+      width: 20,
+      height: 20,
+      tintColor: colors.textSecondary,
+    },
+    typeList: {
+      backgroundColor: colors.white,
+      borderRadius: 8,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+    },
+    typeItem: {
+      padding: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    typeItemText: {
+      fontSize: 16,
+      color: colors.text,
+    },
   });
